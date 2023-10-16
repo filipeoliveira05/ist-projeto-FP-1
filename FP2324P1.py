@@ -105,7 +105,7 @@ def ordena_intersecoes(tup):
 
 
 def territorio_para_str(tuplo):
-    if eh_territorio(tuplo) == False:
+    if not eh_territorio(tuplo):
         raise ValueError('territorio_para_str: argumento invalido')
     
     Nv = len(tuplo)
@@ -131,7 +131,7 @@ def territorio_para_str(tuplo):
 
 
 def obtem_cadeia(tuplo, intersecao):
-    if not eh_intersecao(intersecao) or not eh_intersecao_valida(tuplo, intersecao):
+    if not eh_territorio(tuplo) or not eh_intersecao(intersecao) or not eh_intersecao_valida(tuplo, intersecao):
         raise ValueError('obtem_cadeia: argumentos inválidos')
 
     lista_final = []
@@ -150,18 +150,36 @@ def obtem_cadeia(tuplo, intersecao):
 
 
 
+def obtem_vale(tuplo, intersecao):
+    if not eh_territorio(tuplo) or not eh_intersecao_valida(tuplo, intersecao) or eh_intersecao_livre(tuplo, intersecao):
+        raise ValueError('obtem_vale: argumentos invalidos')
+
+    todos = list(obtem_cadeia(tuplo, intersecao))
+    resultado = []
+
+    for i in todos:
+        adjacent = obtem_intersecoes_adjacentes(tuplo, i)
+        for adjacentes in adjacent:
+            if eh_intersecao_livre(tuplo, adjacentes) and adjacentes not in resultado:
+                resultado.append(adjacentes)
+    return ordena_intersecoes(tuple(resultado))
+    
 
 
+def verifica_conexao(tuplo, intersecao1, intersecao2):
+    if not eh_territorio(tuplo) or not eh_intersecao_valida(tuplo, intersecao1) or not eh_intersecao_valida(tuplo, intersecao2):
+        raise ValueError('verifica_conexao: argumentos invalidos')
+    cadeia1 = obtem_cadeia(tuplo, intersecao1)
+    cadeia2 = obtem_cadeia(tuplo, intersecao2)
 
-
-
-
-
+    if intersecao1 in cadeia2 and intersecao2 in cadeia1:
+        return True
+    return False
 
 
 
 def calcula_numero_montanhas(tuplo):
-    if eh_territorio(tuplo) == False:
+    if not eh_territorio(tuplo):
         raise ValueError('calcula_numero_montanhas: argumento invalido')
     
     Nv = len(tuplo)
@@ -177,5 +195,42 @@ def calcula_numero_montanhas(tuplo):
 
 
 def calcula_numero_cadeias_montanhas(tuplo):
-    if eh_territorio(tuplo) == False:
+    if not eh_territorio(tuplo):
         raise ValueError('calcula_numero_cadeias_montanhas: argumento invalido')
+    
+    Nv = len(tuplo)
+    Nh = len(tuplo[0])
+
+    coordenadas = []
+    for numero in range(1, Nh + 1):
+        for letra in range(ord('A'), ord('A') + Nv):
+            coordenadas.append((chr(letra), numero))
+    
+    cadeias = []
+    for i in coordenadas:
+        if not eh_intersecao_livre(tuplo, i) and obtem_cadeia(tuplo, i) not in cadeias:
+            cadeias.append(obtem_cadeia(tuplo, i))
+    return len(cadeias)
+
+
+
+def calcula_tamanho_vales(tuplo):
+    if not eh_territorio(tuplo):
+        raise ValueError('calcula_tamanho_vales: argumento invalido')
+    
+    Nv = len(tuplo)
+    Nh = len(tuplo[0])
+
+    coordenadas = []
+    for numero in range(1, Nh + 1):
+        for letra in range(ord('A'), ord('A') + Nv):
+            coordenadas.append((chr(letra), numero))
+    
+    vales = []
+    for i in coordenadas:
+        if not eh_intersecao_livre(tuplo, i):
+            adjacent = obtem_intersecoes_adjacentes(tuplo, i)
+            for adjacentes in adjacent:
+                if eh_intersecao_livre(tuplo, adjacentes) and adjacentes not in vales:
+                    vales.append(adjacentes)
+    return(len(vales))
