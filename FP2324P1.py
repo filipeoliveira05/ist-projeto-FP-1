@@ -13,7 +13,7 @@ def eh_territorio(tuplo):
         if len(tuplo[v]) != len(tuplo[0]) or len(tuplo[v]) > 99 or not isinstance(tuplo[v], tuple):
             return False
         for h in range(len(tuplo[v])):
-            if (tuplo[v][h] != 0 and tuplo[v][h] != 1):
+            if (tuplo[v][h] != 0 and tuplo[v][h] != 1) or not type(tuplo[v][h], int):
                 return False
     return True
 
@@ -132,7 +132,7 @@ def territorio_para_str(tuplo):
 
 def obtem_cadeia(tuplo, intersecao):
     if not eh_territorio(tuplo) or not eh_intersecao(intersecao) or not eh_intersecao_valida(tuplo, intersecao):
-        raise ValueError('obtem_cadeia: argumentos inválidos')
+        raise ValueError('obtem_cadeia: argumentos invalidos')
 
     lista_final = []
     queue = [intersecao]
