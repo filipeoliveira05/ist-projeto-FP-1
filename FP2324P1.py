@@ -13,7 +13,7 @@ def eh_territorio(tuplo):
         if len(tuplo[v]) != len(tuplo[0]) or len(tuplo[v]) > 99 or not isinstance(tuplo[v], tuple):
             return False
         for h in range(len(tuplo[v])):
-            if (tuplo[v][h] != 0 and tuplo[v][h] != 1) or not type(tuplo[v][h], int):
+            if (tuplo[v][h] != 0 and tuplo[v][h] != 1) or not isinstance(tuplo[v][h], int):
                 return False
     return True
 
