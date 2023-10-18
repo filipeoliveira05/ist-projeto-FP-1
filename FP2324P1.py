@@ -1,236 +1,375 @@
-def eh_territorio(tuplo):
-    if not isinstance(tuplo, tuple): #verifica se o argumento é do tipo tuplo, se não for retorna Falso
+def eh_territorio(t):
+    """
+    Recebe um argumento de qualquer tipo.
+    Devolve True se o seu argumento corresponde a um território e False caso contrário.
+    Nunca gera erros.
+
+    :param t: Add Type
+    :return: Add Type
+    """
+
+    if not isinstance(t, tuple):
         return False
-    elif isinstance(tuplo, tuple): #verifica se cada tuplo dentro do argumento é um tuplo, se pelo menos um deles não for, retorna Falso
-        for i in tuplo:
+    elif isinstance(t, tuple):
+        for i in t:
             if not isinstance(i, tuple):
                 return False
     
-    if len(tuplo) == 0 or len(tuplo) > 26: #verifica se o tamanho do tuplo está dentro dos requisitos (maior que 0 e menor ou igual a 26, uma vez que só há 26 letras no alfabeto. Caso não aconteça, retorna Falso)
+    if len(t) == 0 or len(t) > 26:
         return False
     
-    for v in range(len(tuplo)):
-        if len(tuplo[v]) != len(tuplo[0]) or len(tuplo[v]) > 99 or not isinstance(tuplo[v], tuple):
+    for v in range(len(t)):
+        if len(t[v]) != len(t[0]) or len(t[v]) > 99 or not isinstance(t[v], tuple):
             return False
-        for h in range(len(tuplo[v])):
-            if (tuplo[v][h] != 0 and tuplo[v][h] != 1) or not isinstance(tuplo[v][h], int):
+        for h in range(len(t[v])):
+            if (t[v][h] != 0 and t[v][h] != 1) or not isinstance(t[v][h], int):
                 return False
     return True
 
 
 
-def obtem_ultima_intersecao(tuplo):
-    Nv = min(26, len(tuplo))
-    Nh = min(99, len(tuplo[0]))
-    intersecao_vertical = chr(ord("A") + Nv - 1)
-    return (intersecao_vertical, Nh)
+def obtem_ultima_intersecao(t):
+    """
+    Recebe um territorio.
+    Devolve a interseção do extremo superior direito do território.
+
+    :param t: Tuple
+    :return: Tuple
+    """
+
+    Nv = min(26, len(t))
+    Nh = min(99, len(t[0]))
+
+    i_vertical = chr(ord("A") + Nv - 1)
+
+    return (i_vertical, Nh)
 
 
 
 def eh_intersecao(arg):
+    """
+    Recebe um argumento de qualquer tipo.
+    Devolve True se o argumento corresponde a uma interseção e False caso contrário.
+    Nunca gera erros.
+
+    :param arg: Add Type
+    :return: Add Type
+    """
+
     if not isinstance(arg, tuple) or len(arg) != 2:
         return False
     
-    letra, numero = arg
+    letter, number = arg
 
-    if not isinstance(letra,str) or len(letra) != 1 or not ord('A') <= ord(letra) <= ord('Z'):
+    if not isinstance(letter,str) or len(letter) != 1 or not ord('A') <= ord(letter) <= ord('Z'):
         return False
-    if not isinstance(numero, int) or not 1 <= numero <= 99:
-        return False
-    return True
-
-
-
-def eh_intersecao_valida(tuplo, intersecao):
-    letra, numero = intersecao
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
-    if not ord('A') <= ord(letra) <= (ord('A') + Nv - 1) or not 1 <= numero <= Nh:
+    if not isinstance(number, int) or not 1 <= number <= 99:
         return False
     return True
 
 
 
-def eh_intersecao_livre(tuplo, intersecao):
-    letra, numero = intersecao
-    coluna = ord(letra) - ord('A')
-    linha = numero
+def eh_intersecao_valida(t, i):
+    """
+    Recebe um território e uma interseção.
+    Devolve True se a interseção corresponde a uma interseção do território, e False caso contrário.
 
-    if 0 <= coluna < len(tuplo) and 1 <= linha <= len(tuplo[0]):
-        if tuplo[coluna][linha - 1] == 0:
+    :param t: Add Type
+    :param i: Add Type
+    :return: Add Type
+    """
+
+    letter, number = i
+    Nv = len(t)
+    Nh = len(t[0])
+
+    if not ord('A') <= ord(letter) <= (ord('A') + Nv - 1) or not 1 <= number <= Nh:
+        return False
+    return True
+
+
+
+def eh_intersecao_livre(t, i):
+    """
+    Recebe um território e uma interseção do território.
+    Devolve True se a interseção corresponde a uma interseção livre (não ocupada por montanhas) dentro do território e False caso contrário.
+
+    :param t: Add Type
+    :param i: Add Type
+    :return: Add Type
+    """
+
+    letter, number = i
+    column = ord(letter) - ord('A')
+    row = number
+
+    if 0 <= column < len(t) and 1 <= row <= len(t[0]):
+        if t[column][row - 1] == 0:
             return True
     return False
 
 
 
-def obtem_intersecoes_adjacentes(tuplo, intersecao):
-    letra, numero = intersecao
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
-    intersecoes_adjacentes = []
+def obtem_intersecoes_adjacentes(t, i):
+    """
+    Recebe um território e uma interseção do território.
+    Devolve o tuplo formado pelas interseções válidas adjacentes da interseção em ordem de leitura de um território.
+
+    :param t: Add Type
+    :param i: Add Type
+    :return: Add Type
+    """
+
+    letter, number = i
+    Nv = len(t)
+    Nh = len(t[0])
+    i_adjacents = []
     
-    intersecoes_adjacentes_possíveis = [
-        (chr(ord(letra)), numero - 1),
-        (chr(ord(letra) - 1), numero),
-        (chr(ord(letra) + 1), numero),
-        (chr(ord(letra)), numero + 1),
+    i_adjacents_possible = [
+        (chr(ord(letter)), number - 1),
+        (chr(ord(letter) - 1), number),
+        (chr(ord(letter) + 1), number),
+        (chr(ord(letter)), number + 1),
     ]
     
-    for v in intersecoes_adjacentes_possíveis:
+    for v in i_adjacents_possible:
         if (ord('A') <= ord(v[0]) <= ord('A') + Nv - 1) and 1 <= v[1] <= Nh:
-            intersecoes_adjacentes.append(v)
+            i_adjacents.append(v)
 
-    return tuple(intersecoes_adjacentes)
+    return tuple(i_adjacents)
 
 
 
 def ordena_intersecoes(tup):
+    """
+    Recebe um tuplo de interseções (potencialmente vazio).
+    Devolve um tuplo contendo as mesmas interseções ordenadas de acordo com a ordem de leitura do território.
+
+    :param tup: Add Type
+    :return: Add Type
+    """
+
     if len(tup) == 0:
         return ()
     
-    letras_ordenadas = []
-    for counter_letras in range(26):
+    letters_sorted = []
+    for counter_letters in range(26):
         for i in tup:
-            if ord(i[0]) == ord('A') + counter_letras:
-                letras_ordenadas.append(i)
+            if ord(i[0]) == ord('A') + counter_letters:
+                letters_sorted.append(i)
 
-    numeros_ordenados = []
+    numbers_sorted = []
     for counter_num in range(100):
-        for i in letras_ordenadas:
+        for i in letters_sorted:
             if i[1] == counter_num:
-                numeros_ordenados.append(i)
+                numbers_sorted.append(i)
     
-    return tuple(numeros_ordenados)
+    return tuple(numbers_sorted)
     
 
 
-def territorio_para_str(tuplo):
-    if not eh_territorio(tuplo):
+def territorio_para_str(t):
+    """
+    Recebe um território.
+    Devolve a cadeia de caracteres que o representa (a representação externa ou representação "para os nossos olhos").
+    Se o argumento dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t):
         raise ValueError('territorio_para_str: argumento invalido')
     
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
-    tuplo_formatado = ''
+    Nv = len(t)
+    Nh = len(t[0])
+    t_formatted = ''
 
-    letras = ' '.join([chr(65 + i) for i in range(Nv)])
-    tuplo_formatado += '   ' + letras + '\n'
+    letters = ' '.join([chr(65 + i) for i in range(Nv)])
+    t_formatted += '   ' + letters + '\n'
 
-    for linha in range(Nh - 1, -1, -1):
-        tuplo_formatado += str(linha + 1).rjust(2) + ' '
-        for coluna in range(Nv):
-            elemento = tuplo[coluna][linha]
-            if elemento == 0:
-                tuplo_formatado += '. '
+    for row in range(Nh - 1, -1, -1):
+        t_formatted += str(row + 1).rjust(2) + ' '
+        for column in range(Nv):
+            element = t[column][row]
+            if element == 0:
+                t_formatted += '. '
             else:
-                tuplo_formatado += 'X '
-        tuplo_formatado += str(linha + 1).rjust(2) + '\n'
-    tuplo_formatado += '   ' + letras
+                t_formatted += 'X '
+        t_formatted += str(row + 1).rjust(2) + '\n'
+    t_formatted += '   ' + letters
     
-    return tuplo_formatado
+    return t_formatted
 
 
 
-def obtem_cadeia(tuplo, intersecao):
-    if not eh_territorio(tuplo) or not eh_intersecao(intersecao) or not eh_intersecao_valida(tuplo, intersecao):
+def obtem_cadeia(t, i):
+    """
+    Recebe um território e uma interseção do território (ocupada por uma montanha ou livre).
+    Devolve o tuplo formado por todas as interseções que estão conetadas a essa interseção ordenadas (incluída si própria) de acordo com a ordem de leitura de um território.
+    Se algum dos argumentos dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :param i: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t) or not eh_intersecao(i) or not eh_intersecao_valida(t, i):
         raise ValueError('obtem_cadeia: argumentos invalidos')
 
-    lista_final = []
-    queue = [intersecao]
+    list_final = []
+    queue = [i]
 
     while queue:
         current = queue.pop(0)
-        if current not in lista_final:
-            lista_final.append(current)
-            adjacentes = obtem_intersecoes_adjacentes(tuplo, current)
-            for adjacente in adjacentes:
-                if eh_intersecao_livre(tuplo, adjacente) == eh_intersecao_livre(tuplo, current) and adjacente not in queue:
-                    queue.append(adjacente)
+        if current not in list_final:
+            list_final.append(current)
+            adjacents = obtem_intersecoes_adjacentes(t, current)
+            for adjacent in adjacents:
+                if eh_intersecao_livre(t, adjacent) == eh_intersecao_livre(t, current) and adjacent not in queue:
+                    queue.append(adjacent)
 
-    return ordena_intersecoes(tuple(lista_final))
+    return ordena_intersecoes(tuple(list_final))
 
 
 
-def obtem_vale(tuplo, intersecao):
-    if not eh_territorio(tuplo) or not eh_intersecao_valida(tuplo, intersecao) or eh_intersecao_livre(tuplo, intersecao):
+def obtem_vale(t, i):
+    """
+    Recebe um território e uma interseção do território ocupada por uma montanha.
+    Devolve o tuplo (potencialmente vazio) formado por todas as interseções que formam parte do vale da montanha da interseção fornecia como argumento ordenadas de acordo à ordem de leitura de um território.
+    Se algum dos argumentos dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :param i: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t) or not eh_intersecao_valida(t, i) or eh_intersecao_livre(t, i):
         raise ValueError('obtem_vale: argumentos invalidos')
 
-    todos = list(obtem_cadeia(tuplo, intersecao))
-    resultado = []
+    all = list(obtem_cadeia(t, i))
+    result = []
 
-    for i in todos:
-        adjacent = obtem_intersecoes_adjacentes(tuplo, i)
-        for adjacentes in adjacent:
-            if eh_intersecao_livre(tuplo, adjacentes) and adjacentes not in resultado:
-                resultado.append(adjacentes)
-    return ordena_intersecoes(tuple(resultado))
+    for i in all:
+        adjacents = obtem_intersecoes_adjacentes(t, i)
+        for adjacent in adjacents:
+            if eh_intersecao_livre(t, adjacent) and adjacent not in result:
+                result.append(adjacent)
+    
+    return ordena_intersecoes(tuple(result))
     
 
 
-def verifica_conexao(tuplo, intersecao1, intersecao2):
-    if not eh_territorio(tuplo) or not eh_intersecao_valida(tuplo, intersecao1) or not eh_intersecao_valida(tuplo, intersecao2):
-        raise ValueError('verifica_conexao: argumentos invalidos')
-    cadeia1 = obtem_cadeia(tuplo, intersecao1)
-    cadeia2 = obtem_cadeia(tuplo, intersecao2)
+def verifica_conexao(t, i1, i2):
+    """
+    Recebe um território e duas interseções do território.
+    Devolve True se as duas interseções estão conectadas e False caso contrário.
+    Se algum dos argumentos dado for inválido, gera um erro.
 
-    if intersecao1 in cadeia2 and intersecao2 in cadeia1:
+    :param t: Add Type
+    :param i1: Add Type
+    :param i2: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t) or not eh_intersecao_valida(t, i1) or not eh_intersecao_valida(t, i2):
+        raise ValueError('verifica_conexao: argumentos invalidos')
+    
+    chain1 = obtem_cadeia(t, i1)
+    chain2 = obtem_cadeia(t, i2)
+
+    if i1 in chain2 and i2 in chain1:
         return True
     return False
 
 
 
-def calcula_numero_montanhas(tuplo):
-    if not eh_territorio(tuplo):
+def calcula_numero_montanhas(t):
+    """
+    Recebe um território.
+    Devolve o número de interseções ocupadas por montanhas no território.
+    Se o argumento dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t):
         raise ValueError('calcula_numero_montanhas: argumento invalido')
     
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
-    numero_montanhas = 0
+    Nv = len(t)
+    Nh = len(t[0])
+    number_mountains = 0
 
     for v in range(Nv):
         for h in range(Nh):
-            if tuplo[v][h] == 1:
-                numero_montanhas += 1
-    return numero_montanhas
+            if t[v][h] == 1:
+                number_mountains += 1
+    
+    return number_mountains
 
 
 
-def calcula_numero_cadeias_montanhas(tuplo):
-    if not eh_territorio(tuplo):
+def calcula_numero_cadeias_montanhas(t):
+    """
+    Recebe um território.
+    Devolve o número de cadeias de montanhas contidas no território.
+    Se o argumento dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t):
         raise ValueError('calcula_numero_cadeias_montanhas: argumento invalido')
     
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
+    Nv = len(t)
+    Nh = len(t[0])
 
-    coordenadas = []
-    for numero in range(1, Nh + 1):
-        for letra in range(ord('A'), ord('A') + Nv):
-            coordenadas.append((chr(letra), numero))
-    
-    cadeias = []
-    for i in coordenadas:
-        if not eh_intersecao_livre(tuplo, i) and obtem_cadeia(tuplo, i) not in cadeias:
-            cadeias.append(obtem_cadeia(tuplo, i))
-    return len(cadeias)
+    mountains_coordinates = []
+    for v in range(Nv):
+        for h in range(Nh):
+            if t[v][h] == 1:
+                coordinates = ()
+                coordinates += (chr(ord('A') + v), h + 1)
+                mountains_coordinates.append(coordinates)
+
+    chains = []
+    for i in mountains_coordinates:
+        if obtem_cadeia(t, i) not in chains:
+            chains.append(obtem_cadeia(t, i))
+    return len(chains)
 
 
 
-def calcula_tamanho_vales(tuplo):
-    if not eh_territorio(tuplo):
+def calcula_tamanho_vales(t):
+    """
+    Recebe um território.
+    Devolve o número total de interseções diferentes que formam todos os vales do território.
+    Se o argumento dado for inválido, gera um erro.
+
+    :param t: Add Type
+    :return: Add Type
+    """
+
+    if not eh_territorio(t):
         raise ValueError('calcula_tamanho_vales: argumento invalido')
     
-    Nv = len(tuplo)
-    Nh = len(tuplo[0])
+    Nv = len(t)
+    Nh = len(t[0])
 
-    coordenadas = []
-    for numero in range(1, Nh + 1):
-        for letra in range(ord('A'), ord('A') + Nv):
-            coordenadas.append((chr(letra), numero))
+    coordinates = []
+    for number in range(1, Nh + 1):
+        for letter in range(ord('A'), ord('A') + Nv):
+            coordinates.append((chr(letter), number))
     
-    vales = []
-    for i in coordenadas:
-        if not eh_intersecao_livre(tuplo, i):
-            adjacent = obtem_intersecoes_adjacentes(tuplo, i)
-            for adjacentes in adjacent:
-                if eh_intersecao_livre(tuplo, adjacentes) and adjacentes not in vales:
-                    vales.append(adjacentes)
-    return(len(vales))
+    valleys = []
+    for i in coordinates:
+        if not eh_intersecao_livre(t, i):
+            adjacents = obtem_intersecoes_adjacentes(t, i)
+            for adjacent in adjacents:
+                if eh_intersecao_livre(t, adjacent) and adjacent not in valleys:
+                    valleys.append(adjacent)
+    
+    return(len(valleys))
+
