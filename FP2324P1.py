@@ -416,8 +416,9 @@ def calcula_numero_cadeias_montanhas(t):
     chains = []
     for i in coordinates:
         if not eh_intersecao_livre(t, i):
-            if obtem_cadeia(t,i) not in chains:
-                chains.append(obtem_cadeia(t,i))
+            chain = obtem_cadeia(t,i)
+            if chain not in chains:
+                chains.append(chain)
     
     return len(chains)
 
