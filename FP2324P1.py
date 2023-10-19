@@ -415,9 +415,8 @@ def calcula_numero_cadeias_montanhas(t):
     #itera pelas coordenadas e, caso seja não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado
     chains = []
     for i in coordinates:
-        chain = obtem_cadeia(t,i)
-        if not eh_intersecao_livre(t, i) and chain not in chains:
-            chains.append(chain)
+        if not eh_intersecao_livre(t, i) and obtem_cadeia(t,i) not in chains:
+            chains.append(obtem_cadeia(t,i))
     
     return len(chains)
 
