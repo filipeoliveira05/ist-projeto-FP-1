@@ -409,18 +409,24 @@ def calcula_numero_cadeias_montanhas(t):
     if not eh_territorio(t):
         raise ValueError('calcula_numero_cadeias_montanhas: argumento invalido')
     
-    #obtém as "coordenadas" das interseções do território dado.
+    #obtém as "coordenadas" das interseções com montanhas do território dado.
     coordinates = obtem_coordenadas(t)
-    
-    #itera pelas coordenadas e, caso seja não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado
-    chains = []
+    coordinates_montains = []
     for i in coordinates:
         if not eh_intersecao_livre(t, i):
-            chain = obtem_cadeia(t,i)
-            if chain not in chains:
-                chains.append(chain)
-    
-    return len(chains)
+            coordinates_montains.append(i)
+
+    #itera pelas coordenadas e, caso seja não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado
+    chains = 0
+    i = 0
+    while i < len(coordinates_montains):
+        if i == 0:
+            chains += 1
+        if i > 0:
+            if verifica_conexao(t, coordinates_montains[i], coordinates_montains[i-1]) == False:
+                chains += 1
+        i+=1
+    return chains
 
 
 
@@ -437,16 +443,9 @@ def calcula_tamanho_vales(t):
     #caso o argumento dado seja inválido, a função gera um erro.
     if not eh_territorio(t):
         raise ValueError('calcula_tamanho_vales: argumento invalido')
-    
-    #definição de número de caminhos verticais e horizontais.
-    Nv = len(t)
-    Nh = len(t[0])
 
     #obtém as "coordenadas" das interseções do território dado.
-    coordinates = []
-    for number in range(1, Nh + 1):
-        for letter in range(ord('A'), ord('A') + Nv):
-            coordinates.append((chr(letter), number))
+    coordinates = obtem_coordenadas(t)
     
     #Lógica:
     #1 - itera pelas coordenadas, e caso não corresponda a uma interseção livre, obtem-se as suas adjacentes
