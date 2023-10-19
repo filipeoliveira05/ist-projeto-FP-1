@@ -67,11 +67,14 @@ def eh_intersecao(arg):
     #definição do argumento (tuplo, onde o primeiro elemento corresponde à variável letter e o segundo à variável number).
     letter, number = arg
 
-    #verifica se as variáveis letter e number são válidas.
+    #verifica se a variável letter é válida.
     if not isinstance(letter,str) or len(letter) != 1 or not ord('A') <= ord(letter) <= ord('Z'):
         return False
+    
+    #verifica se a variável number é válida.
     if not isinstance(number, int) or not 1 <= number <= 99:
         return False
+    
     return True
 
 
@@ -220,7 +223,7 @@ def territorio_para_str(t):
     #adiciona 'rótulos' das colunas com espaço de avanço à esquerda na primeira linha de representação.
     t_formatted += '   ' + letters + '\n'
 
-    #iteração pelos caminhos horizontais do território de cima para baixo
+    #iteração pelos caminhos horizontais do território de cima para baixo.
     for row in range(Nh - 1, -1, -1):
         #adiciona o número do caminho horizontal com espaço de avanço à esquerda. 
         t_formatted += str(row + 1).rjust(2) + ' '
@@ -255,29 +258,27 @@ def obtem_cadeia(t, i):
     if not eh_territorio(t) or not eh_intersecao(i) or not eh_intersecao_valida(t, i):
         raise ValueError('obtem_cadeia: argumentos invalidos')
 
-    #variável que armazena os resultados finais
     list_final = []
 
-    #lista com as interseções por 'validar', antes de poder entrar na lista final
+    #lista com as interseções por 'validar', antes de poder entrar na lista final.
     queue = [i]
 
     #'current' é a variável com a interseção que está a ser analisada no momento.
     #'adjacents' é a variável com as interseções adjacentes da interseção do 'current'.
 
-    #Lógica: 
-    #1 - retirar o primeiro elemento do 'queue' e atribuir ao 'current'.
-    #2 - se o 'current' não estiver na lista final, é adicionado.
-    #3 - obtem-se as interseções adjacentes e são atribuídas à 'adjacent'.
-    #4 - por cada elemento no 'adjacent', caso não esteja já no 'queue' e seja do mesmo tipo (livre ou não livre) da 'current', adicionar ao 'queue'.
-    #5 - processo repete-se até a 'queue' não ter nenhum elemento.
     while queue:
+        #retira o primeiro elemento do 'queue' e atribui ao 'current'.
         current = queue.pop(0)
         if current not in list_final:
+            #se o 'current' não estiver na lista final, é adicionado.
             list_final.append(current)
+            #obtém-se as interseções adjacentes e são atribuídas à 'adjacent'.
             adjacents = obtem_intersecoes_adjacentes(t, current)
             for adjacent in adjacents:
+                #por cada elemento no 'adjacent', caso não esteja já no 'queue' e seja do mesmo tipo (livre ou não livre) da 'current', adicionar ao 'queue'.
                 if eh_intersecao_livre(t, adjacent) == eh_intersecao_livre(t, current) and adjacent not in queue:
                     queue.append(adjacent)
+        #processo repete-se até a 'queue' não ter nenhum elemento.
 
     return ordena_intersecoes(tuple(list_final))
 
@@ -286,7 +287,7 @@ def obtem_cadeia(t, i):
 def obtem_vale(t, i):
     """
     Recebe um território e uma interseção do território ocupada por uma montanha.
-    Devolve o tuplo (potencialmente vazio) formado por todas as interseções que formam parte do vale da montanha da interseção fornecia como argumento ordenadas de acordo à ordem de leitura de um território.
+    Devolve o tuplo (potencialmente vazio) formado por todas as interseções que formam parte do vale da montanha da interseção fornecida como argumento, ordenadas de acordo à ordem de leitura de um território.
     Se algum dos argumentos dado for inválido, gera um erro.
 
     :param t: tuple
@@ -302,13 +303,12 @@ def obtem_vale(t, i):
     all = list(obtem_cadeia(t, i))
 
     result = []
-
-    #Lógica:
-    #1 - por cada interseção em 'all', obter as suas interseções adjacentes.
-    #2 - por cada interseção nesse grupo de adjacentes, caso esta seja livre e não esteja já no resultado final, adicionar ao resultado.
+    
     for i in all:
+        #por cada interseção em 'all', obter as suas interseções adjacentes.
         adjacents = obtem_intersecoes_adjacentes(t, i)
         for adjacent in adjacents:
+            #por cada interseção nesse grupo de adjacentes, caso esta seja livre e não esteja já no resultado final, adicionar ao resultado.
             if eh_intersecao_livre(t, adjacent) and adjacent not in result:
                 result.append(adjacent)
     
@@ -339,6 +339,7 @@ def verifica_conexao(t, i1, i2):
     #caso a interseção1 esteja na cadeia da interseção2 e caso a interseção2 esteja na cadeia da interseção1, retorna True.
     if i1 in chain2 and i2 in chain1:
         return True
+    
     return False
 
 
@@ -411,22 +412,16 @@ def calcula_numero_cadeias_montanhas(t):
     
     #obtém as "coordenadas" das interseções com montanhas do território dado.
     coordinates = obtem_coordenadas(t)
-    coordinates_montains = []
+
+    #itera pelas coordenadas e, caso não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado.
+    chains = []
     for i in coordinates:
         if not eh_intersecao_livre(t, i):
-            coordinates_montains.append(i)
-
-    #itera pelas coordenadas e, caso seja não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado
-    chains = 0
-    i = 0
-    while i < len(coordinates_montains):
-        if i == 0:
-            chains += 1
-        if i > 0:
-            if verifica_conexao(t, coordinates_montains[i], coordinates_montains[i-1]) == False:
-                chains += 1
-        i+=1
-    return chains
+            chain = obtem_cadeia(t,i)            
+            if chain not in chains:
+                chains.append(chain)
+    
+    return len(chains)
 
 
 
@@ -437,7 +432,7 @@ def calcula_tamanho_vales(t):
     Se o argumento dado for inválido, gera um erro.
 
     :param t: tuple
-    :return: bool
+    :return: int
     """
 
     #caso o argumento dado seja inválido, a função gera um erro.
@@ -447,14 +442,13 @@ def calcula_tamanho_vales(t):
     #obtém as "coordenadas" das interseções do território dado.
     coordinates = obtem_coordenadas(t)
     
-    #Lógica:
-    #1 - itera pelas coordenadas, e caso não corresponda a uma interseção livre, obtem-se as suas adjacentes
-    #2 - itera pelas adjacentes, e caso estas sejam interseções livres e não estejam no resultado final, adiciona-as ao resultado
     valleys = []
     for i in coordinates:
+        #itera pelas coordenadas, e caso não corresponda a uma interseção livre, obtem-se as suas adjacentes.
         if not eh_intersecao_livre(t, i):
             adjacents = obtem_intersecoes_adjacentes(t, i)
             for adjacent in adjacents:
+                #itera pelas adjacentes, e caso estas sejam interseções livres e não estejam no resultado final, adiciona-as ao resultado.
                 if eh_intersecao_livre(t, adjacent) and adjacent not in valleys:
                     valleys.append(adjacent)
     
