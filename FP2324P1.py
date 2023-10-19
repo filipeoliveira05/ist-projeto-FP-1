@@ -372,6 +372,21 @@ def calcula_numero_montanhas(t):
 
 
 
+def obtem_coordenadas(t):
+    #definição de número de caminhos verticais e horizontais.
+    Nv = len(t)
+    Nh = len(t[0])
+    
+    #obtém as "coordenadas" das interseções do território dado.
+    coordinates = []
+    for number in range(1, Nh + 1):
+        for letter in range(ord('A'), ord('A') + Nv):
+            coordinates.append((chr(letter), number))
+    
+    return coordinates
+
+
+
 def calcula_numero_cadeias_montanhas(t):
     """
     Recebe um território.
@@ -386,15 +401,8 @@ def calcula_numero_cadeias_montanhas(t):
     if not eh_territorio(t):
         raise ValueError('calcula_numero_cadeias_montanhas: argumento invalido')
     
-    #definição de número de caminhos verticais e horizontais.
-    Nv = len(t)
-    Nh = len(t[0])
-
     #obtém as "coordenadas" das interseções do território dado.
-    coordinates = []
-    for number in range(1, Nh + 1):
-        for letter in range(ord('A'), ord('A') + Nv):
-            coordinates.append((chr(letter), number))
+    coordinates = obtem_coordenadas(t)
     
     #itera pelas coordenadas e, caso seja não seja uma interseção livre e a cadeia dela não estiver no reusltado final, adicionar a cadeia ao resultado
     chains = []
